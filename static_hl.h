@@ -1,15 +1,12 @@
 #include "global.h"
-#include <algorithm>
-#include <cstdint>
-#include <functional>
-#include <queue>
-#include <utility>
+#include <cstdio>
 class Static_HL
 {
 public:
-    int n;
+    int n, siz;
     vector <vector <pair<int,int> > > L;
     vector <vector <int> > pred;
+    /*获取两点间距离*/
     int getD(int u,int v)
     {
         map <int, int> cnt, dis;
@@ -24,32 +21,45 @@ public:
             dis[x] += w;
         }
         int ret = inf;
-        for(auto [x,ct] :cnt)
+        for(auto [x, ct] :cnt)
             if(ct == 2)
                 ret = min(ret, dis[x]);
         return ret;
     }
+    /*获取两点间最短路径（边形式）*/
     vector <pair <int,int> > getSP(int u,int v)
     {
+        vector <pair <int,int> > retL, retR;
+        if(u == v)
+            return retL;
         map <int, int> cnt, dis;
+        //cerr << "L[u]:" << endl;
         for(auto [x, w]: L[u])
         {
             cnt[x] += 1;
             dis[x] += w;
+            //cerr << "[x, w] = " << x << " " << w << " dis[x] " << dis[x] <<endl;
         }
+        //cerr << "L[v]:" << endl;
         for(auto [x, w]: L[v])
         {
             cnt[x] += 1;
             dis[x] += w;
+            //cerr << "[x, w] = " << x << " " << w << " dis[x] " << dis[x] <<endl;
         }
         int h = 0;
-        for(auto [x,ct] :cnt)
-            if(ct == 2 && (h == 0 || dis[x] > dis[h]))
+        for(auto [x, ct] :cnt)
+        {
+            //fprintf(stderr, "[%d %d]\n", x, ct);
+            if(ct == 2 && (h == 0 || dis[x] < dis[h]))
                 h = x;
-        vector <pair <int,int> > retL, retR;
+        }    
         int y = u;
+        // cerr << "h is " << h << endl;
+        // cerr << "start find Lway:" << endl;
         while(y != h)
         {
+            //cerr << y << " ";
             for(int i = 0; i < L[y].size(); i++)
                 if(L[y][i].first == h)
                 {
@@ -59,8 +69,10 @@ public:
                 }
         }
         y = v;
+        // cerr << endl << "start find Rway:" << endl;
         while(y != h)
         {
+            //cerr << y << " ";
             for(int i = 0; i < L[y].size(); i++)
                 if(L[y][i].first == h)
                 {
@@ -69,40 +81,76 @@ public:
                     break;
                 }
         }
+        //cerr << endl;
+
         reverse(retR.begin(), retR.end());
         for(auto it: retR) retL.push_back(it);
         return retL;
     }
+    vector <int> getuSP(int u,int v)
+    {
+        vector <pair <int,int> > es = getSP(u, v);
+        vector <int> ret;
+        int now = u;
+        ret.push_back(now);
+        for(auto [x, y]: es)
+        {
+            if(now == x) now = y;
+            else now = x;
+            ret.push_back(now);
+        }
+        return ret;
+    }
+    void clear()
+    {
+        n = 0;
+        L.clear();
+        pred.clear();
+    }
     void build(Graph G)
     {
+        clear();
         n = G.n;
         for(int i = 0; i <= n; i++)
+        {
             L.push_back(vector<pair<int, int> >());
+            pred.push_back(vector <int>());
+        }    
 
         vector <int> v;
-        for(int i = 1; i <= n; i++)
+        for(int i = 0; i <= n; i++)
             v.push_back(i);
-        random_shuffle(v.begin(),v.end());
+
+        random_device rd;
+        mt19937 gen(rd());
+        shuffle(v.begin(), v.end(), gen);
+
+        for(int i = 0; i <= n; i++)
+            if(v[i] == 0)
+                swap(v[i],v[0]);
 
         for(int i = 1; i <= n; i++)
         {
-            vector <vector <pair<int,int> > > tL = L;
-            vector <bool> vis(n+1),d(n+1);
+            //cout << "the " << i << "th is:" << v[i] << endl; 
+            //vector <vector <pair<int,int> > > tL = L;
+            vector <int> vis(n+1),d(n+1);
             for(int j = 1; j <= n; j++)
                 d[j] = inf;
             d[v[i]] = 0;
-
             priority_queue <pair<int, int>, vector <pair<int, int> >, greater<pair<int, int> > > pq;
             pq.push(make_pair(d[v[i]], v[i]));
             vector <int> pre(n+1);
             while(!pq.empty())
             {
                 int u = pq.top().second;
+                pq.pop();
                 if(vis[u]) continue;
                 vis[u] = 1;
+                //cout << u << " is the top of pq" << endl;
                 if(d[u] < getD(v[i], u))
                 {
-                    tL[u].push_back(make_pair(v[i], d[u]));
+                    //cout << "gone getD" << endl;
+                    L[u].push_back(make_pair(v[i], d[u]));
                     pred[u].push_back(pre[u]);
                     for(auto [nxt, val]: G.ed[u])
                     {
@@ -115,8 +163,25 @@ public:
                     }
                 }
             }
-            L = tL;
+            //L = tL;
 
+        }
+
+        for(int i = 1; i <= n; i++)
+            siz += L[i].size();
+    }
+
+    void debug()
+    {
+        for(int i = 1; i <= n; i++)
+        {
+            printf("in %d:\n", i);
+            for(int x = 0; x < L[i].size(); x++)
+            {
+                auto [y, w] = L[i][x];
+                printf("[%d %d] = %d, par = %d\n", i, y, w, pred[i][x]);
+            }
+            puts("");
         }
     }
 };
