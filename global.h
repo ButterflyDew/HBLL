@@ -1,3 +1,4 @@
+#pragma once
 #include <iostream>
 #include <cstdio>
 #include <random>
@@ -57,6 +58,7 @@ public:
     vector <pair <pair<int, int>, int> > edge;
     vector <vector < pair <int, int> > > ed;
     map <pair <int, int>, int > gval;
+
     void Print()
     {
         cerr << "n: " << n << endl;
@@ -64,6 +66,7 @@ public:
             for(auto [v, w]: ed[i])
                 cerr << "[u, v, w] = " << i << "," << v << "," << w << endl;
     }
+
     void build_ed()
     {
         for(int i = 0; i <= n; i++)
@@ -88,6 +91,7 @@ public:
             ed[v].push_back(make_pair(u, w));
         }
     }
+
     void clear()
     {
         n = 0;
@@ -95,6 +99,7 @@ public:
         edge.clear();
         ed.clear();
     }
+
     void random_graph_nm(int n_,int m_,int M)
     {
         clear();
@@ -108,6 +113,7 @@ public:
         }
         build_ed();
     }
+
     void read()
     {
         clear();

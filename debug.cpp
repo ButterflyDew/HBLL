@@ -1,5 +1,5 @@
 #include "static_hl.h"
-#include <cstdio>
+#include "betweenness_centrality.h"
 const int N=310;
 int n, dis[N][N];
 Graph G;
@@ -79,7 +79,7 @@ void check_label_size()
 {
     auto start_time = chrono::high_resolution_clock::now();
         
-    int n = 10000, m = 3*n, M = 200;
+    int n = 1000, m = 3*n, M = 200;
     G.random_graph_nm(n, m, M);
     sthl.build(G);
     cerr << "siz:" << sthl.siz << endl;
@@ -103,6 +103,14 @@ void check_label_size()
     exec = chrono::duration_cast<chrono::microseconds>(end_time - start_time);
     cout << "query time:" << exec.count()/1e6 << "s" << endl;
 }
+void check_B_C()
+{
+    //int n = 4, m = 5, M = 1;
+    //G.random_graph_nm(n, m, M);
+    G.read();
+    B_C betc;
+    betc.build(G);
+}
 int main()
 {
     /*G.read();
@@ -112,5 +120,6 @@ int main()
     check();*/
     //check_with_floyd();
     check_label_size();
+    //check_B_C();
     return 0;
 }

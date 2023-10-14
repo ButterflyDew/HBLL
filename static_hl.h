@@ -1,5 +1,6 @@
+#pragma once
 #include "global.h"
-#include <cstdio>
+#include "betweenness_centrality.h"
 class Static_HL
 {
 public:
@@ -120,14 +121,18 @@ public:
         vector <int> v;
         for(int i = 0; i <= n; i++)
             v.push_back(i);
+        // random_device rd;
+        // mt19937 gen(rd());
+        // shuffle(v.begin(), v.end(), gen);
+        // for(int i = 0; i <= n; i++)
+        //     if(v[i] == 0)
+        //         swap(v[i],v[0]);
 
-        random_device rd;
-        mt19937 gen(rd());
-        shuffle(v.begin(), v.end(), gen);
-
-        for(int i = 0; i <= n; i++)
-            if(v[i] == 0)
-                swap(v[i],v[0]);
+        B_C betc;
+        betc.build(G);
+        sort(v.begin(), v.end(), [&betc](int v1, int v2) {
+            return betc.BC[v1] > betc.BC[v2];
+        });
 
         for(int i = 1; i <= n; i++)
         {
