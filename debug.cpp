@@ -118,7 +118,7 @@ int main()
     sthl.build(G);
     sthl.debug();
     check();*/
-    check_with_floyd();
+    //check_with_floyd();
     //check_label_size();
     //check_B_C();
     return 0;

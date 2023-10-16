@@ -40,7 +40,15 @@ public:
 
     void clear();
 
-    void random_graph_nm(int n_,int m_,int M);
+    void random_graph_nm(int n_, int m_, int M);
 
     void read();
+};
+
+
+class Tree: public Graph
+{
+    void random_tree(int n_, int M);
+    
+    bool check_tree();
 };

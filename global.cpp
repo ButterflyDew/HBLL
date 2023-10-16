@@ -118,3 +118,42 @@ void Graph::read()
     build_ed();
     inputFile.close();
 }
+
+void Tree::random_tree (int n_, int M)
+{
+    clear();
+    n = n_;
+    for(int i = 1; i < n; i++)
+    {
+        int u = generateRandomNumber(1, n);
+        int v = generateRandomNumber(1, n);
+        int w = generateRandomNumber(1, M);
+        edge.push_back(make_pair(make_pair(u, v), w));
+    }
+    build_ed();
+}
+/*检测是否为树*/
+bool Tree::check_tree()
+{
+    if(edge.size() != n-1) return false;
+    vector <int> f(n+1);
+    for(int i = 1; i <= n; i++) f[i] = i;
+    auto Find = [&f](int x) {
+        vector <int> rev;
+        while(f[x] != x)
+        {
+            rev.push_back(x);
+            x = f[x];
+        }
+        for(auto y: rev)
+            f[y] = x;
+        return x;
+    };
+    for(auto [e, w]: edge)
+    {
+        auto [u, v] = e;
+        if(Find(u) == Find(v)) return false;
+        f[Find(u)] = Find(v);
+    }
+    return true;
+}
