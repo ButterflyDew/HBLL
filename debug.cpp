@@ -79,7 +79,7 @@ void check_label_size()
 {
     auto start_time = chrono::high_resolution_clock::now();
         
-    int n = 1000, m = 3*n, M = 200;
+    int n = 10000, m = 3*n, M = 200;
     G.random_graph_nm(n, m, M);
     sthl.build(G);
     cerr << "siz:" << sthl.siz << endl;
@@ -118,8 +118,8 @@ int main()
     sthl.build(G);
     sthl.debug();
     check();*/
-    //check_with_floyd();
-    check_label_size();
+    check_with_floyd();
+    //check_label_size();
     //check_B_C();
     return 0;
 }
