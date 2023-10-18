@@ -1,9 +1,13 @@
 #include "static_hl.h"
+#include "hbll.h"
 #include "betweenness_centrality.h"
+#include <cstdio>
+#include <utility>
 const int N=310;
 int n, dis[N][N];
 Graph G;
 Static_HL sthl;
+HBLL hbll;
 void floyd()
 {
     n = G.n;
@@ -111,6 +115,104 @@ void check_B_C()
     B_C betc;
     betc.build(G);
 }
+int dp[101][101][101];
+void go_hbll_bf()
+{
+    n = G.n;
+    for(int h = 0; h <= n; h++)
+        for(int i = 0; i <= n+1; i++)
+            for(int j = 0; j <= n+1; j++)
+                dp[h][i][j] = inf;
+    for(int r = 1; r <= n; r++) dp[0][r][r] = 0;
+
+    for(int h = 0; h < n; h++)
+        for(int r = 1; r <= n; r++)
+            for(int u = 1; u <= n; u++)
+                for(auto [v, w]: G.ed[u])
+                    if(dp[h+1][r][v] > dp[h][r][u] + w)
+                        dp[h+1][r][v] = dp[h][r][u] + w;
+
+    for(int h = 1; h <= n; h++)
+    {
+        for(int i = 0; i <= n+1; i++)
+            for(int j = 0; j <= n+1; j++)
+                dp[h][i][j] = min(dp[h][i][j], dp[h-1][i][j]);
+    }
+}
+void check_hbll()
+{
+
+    int n = 8, m = 12, M = 5;
+    for(int T = 1; T <= 100; T++)
+    {
+        G.random_graph_nm(n, m, M);
+        // G.read();
+        // int n = G.n;
+
+        go_hbll_bf();
+        hbll.build_hbll(G);
+    
+        //fprintf(stderr, "hbll has been built!\n");
+        hbll.output_L();
+        for(int h = 1; h <= n-1; h++)
+            for(int i = 1; i <= n; i++)
+                for(int j = 1; j <= n; j++)
+                {
+                    //fprintf(stderr, "Testing [%d, (%d, %d)]\n", h, i, j);
+                    if(dp[h][i][j] != hbll.GET_WD(i, j, h))
+                    {
+                        fprintf(stderr, "[%d %d %d] = %d, not = %d!\n", h, i, j, dp[h][i][j], hbll.GET_WD(i, j, h));
+                        G.Print();
+                        return;
+                    }
+                    if(dp[h][i][j] == inf) continue;
+                    //cout << "222" << endl;
+                    auto route = hbll.GET_MWP(i, j, h);
+                    //cout << "out of getmwp" << endl;
+                    if(route.front() != i || route.back() != j)
+                    {   
+                        fprintf(stderr, "the route's begin or end is err!\n");
+                        G.Print();
+                        return;
+                    }
+                    //cout << "2222" << endl;
+                    if(route.size() > h + 1)
+                    {
+                        fprintf(stderr, "the route's length exceeds %d!\n", h);
+                        G.Print();
+                        return;
+                    }
+                    //cout << "22222" << endl;
+                    int las = 0, sum = 0;
+                    for(auto u: route)
+                    {
+                        if(las != 0)
+                        {
+                            auto it = make_pair(las, u);
+                            if(G.gval.find(it) == G.gval.end())
+                            {
+                                fprintf(stderr, "the edge(%d, %d) is not exist!\n", it.first, it.second);
+                                G.Print();
+                                return;
+                            }
+                            else
+                                sum += G.gval[it];
+                        }
+                        las = u;
+                    }
+                    //cout << "222222" << endl;
+                    if(sum != dp[h][i][j])
+                    {
+                        fprintf(stderr, "the route length (%d) is not equal to the dis (%d) of [%d, %d, %d]!\n",sum, dis[i][j], h, i, j);
+                        G.Print();
+                        return;
+                    }
+                }
+
+        fprintf(stderr, "ok in %d!\n", T);
+    }
+   
+}
 int main()
 {
     /*G.read();
@@ -121,5 +223,6 @@ int main()
     //check_with_floyd();
     //check_label_size();
     //check_B_C();
+    check_hbll();
     return 0;
 }
