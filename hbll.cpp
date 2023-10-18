@@ -171,16 +171,17 @@ vector <int> HBLL::GET_MWP(int u, int v, int h)
     auto [h1, h2] = info.second;
     int y = u;
     vector <int> retL, retR;
-    fprintf(stderr, "u, v, h = [%d, %d, %d], idl, h1, h2 = [%d, %d, %d]\n", u, v, h, idl, h1, h2);
+    //fprintf(stderr, "u, v, h = [%d, %d, %d], idl, h1, h2 = [%d, %d, %d]\n", u, v, h, idl, h1, h2);
     while(y != idl)
     {
-        fprintf(stderr, "%d ", y);
+        //fprintf(stderr, "%d ", y);
         for(int i = 0; i < L[y].size(); i++)
             if(L[y][i].l == idl && L[y][i].h == h1)
             {
                 retL.push_back(y);
                 y = prew[y][i].first;
-                h1 = prew[y][i].second;
+                //h1 = prew[y][i].second;
+                --h1;
                 break;
             }
     }
@@ -194,7 +195,8 @@ vector <int> HBLL::GET_MWP(int u, int v, int h)
             {
                 retR.push_back(y);
                 y = prew[y][i].first;
-                h2 = prew[y][i].second;
+                //h2 = prew[y][i].second;
+                --h2;
                 break;
             }
     }

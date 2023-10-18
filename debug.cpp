@@ -142,7 +142,7 @@ void go_hbll_bf()
 void check_hbll()
 {
 
-    int n = 8, m = 12, M = 5;
+    int n = 60, m = 120, M = 10;
     for(int T = 1; T <= 100; T++)
     {
         G.random_graph_nm(n, m, M);
@@ -153,7 +153,7 @@ void check_hbll()
         hbll.build_hbll(G);
     
         //fprintf(stderr, "hbll has been built!\n");
-        hbll.output_L();
+        //hbll.output_L();
         for(int h = 1; h <= n-1; h++)
             for(int i = 1; i <= n; i++)
                 for(int j = 1; j <= n; j++)
