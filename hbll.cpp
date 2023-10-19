@@ -18,7 +18,7 @@ void HBLL::build_hbll(Graph G)
     {
         v.push_back(i);
         L.push_back(vector <Triple> ());
-        prew.push_back(vector <pair <int,int > > ());
+        prew.push_back(vector <int> ());
     }    
     B_C betc;
     betc.build(G);
@@ -39,8 +39,8 @@ void HBLL::build_hbll(Graph G)
                 d[l].push_back(inf);
          
         d[0][v[i]] = 0;
-        vector <pair <int, int > > prelas(n+1);
-        prelas[v[i]] = make_pair(0, 0);
+        vector <int> prelas(n+1);
+        prelas[v[i]] = 0;
         for(int h = 0; ; h++)
         {
             int cur = h&1;
@@ -51,7 +51,7 @@ void HBLL::build_hbll(Graph G)
 
             V[cur^1].clear();
             d[cur^1] = d[cur];
-            vector <pair <int, int> > pre(n+1);// [par, h]
+            vector <int> pre(n+1);
             for(auto u: V[cur])
             {
                 if(d[cur][u] >= GET_WD_build(v[i], u, h, id).first)
@@ -64,7 +64,7 @@ void HBLL::build_hbll(Graph G)
                     {
                         V[cur^1].push_back(nxt);
                         d[cur^1][nxt] = d[cur][u] + w;
-                        pre[nxt] = make_pair(u, h);
+                        pre[nxt] = u;
                     }
                 }
             }
@@ -179,8 +179,7 @@ vector <int> HBLL::GET_MWP(int u, int v, int h)
             if(L[y][i].l == idl && L[y][i].h == h1)
             {
                 retL.push_back(y);
-                y = prew[y][i].first;
-                //h1 = prew[y][i].second;
+                y = prew[y][i];
                 --h1;
                 break;
             }
@@ -194,8 +193,7 @@ vector <int> HBLL::GET_MWP(int u, int v, int h)
             if(L[y][i].l == idl && L[y][i].h == h2)
             {
                 retR.push_back(y);
-                y = prew[y][i].first;
-                //h2 = prew[y][i].second;
+                y = prew[y][i];
                 --h2;
                 break;
             }

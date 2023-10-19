@@ -12,7 +12,7 @@ public:
     };
     int n;
     vector < vector <Triple> > L;
-    vector < vector <pair <int,int> > > prew;
+    vector < vector <int> > prew;
     void build_hbll(Graph G);
     pair <int,pair <int, pair <int,int> > > GET_WD_build(int u, int v, int h, vector <int> id);
     int GET_WD(int u, int v, int h);
