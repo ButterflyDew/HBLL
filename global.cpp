@@ -132,7 +132,7 @@ void Tree::random_tree (int n_, int M)
     }
     build_ed();
 }
-/*检测是否为树*/
+/*检测是否为树，待修改*/
 bool Tree::check_tree()
 {
     if(edge.size() != n-1) return false;
@@ -156,4 +156,53 @@ bool Tree::check_tree()
         f[Find(u)] = Find(v);
     }
     return true;
+}
+
+void Tree::clear()
+{
+    vex.clear();
+    Id.clear();
+    par.clear();
+    chi.clear();
+    n = rt = 0;
+}
+
+void Tree::add_vex(int u)
+{
+    if(Id.find(u) == Id.end()) 
+        Id[u] = n++;
+}
+
+void Tree::add_root(int u)
+{
+    rt = u;
+    add_vex(u);
+}
+
+void Tree::add_edge(int u, int v)
+{
+    add_vex(u), add_vex(v);
+    chi[Id[u]].insert(v);
+    par[Id[v]] = u;
+}
+
+int Tree::GET_UD_T(int u,int v)
+{
+    map <int, int> h;
+    int tu = u, ct = 0;
+    while(tu != rt)
+    {
+        h[tu] = ct++;
+        tu = par[Id[tu]];
+    }
+    h[tu] = ct++;
+
+    int tv = v; 
+    ct = 0;
+    while(h.find(tv) == h.end())
+    {
+        ct++;
+        tv = par[Id[tv]];
+    }
+    return h[tv] + ct;
 }

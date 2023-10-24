@@ -9,6 +9,7 @@
 #include <queue>
 #include <map>
 #include <chrono>
+#include <set>
 using namespace std;
 
 extern const int inf;
@@ -48,7 +49,24 @@ public:
 
 class Tree: public Graph
 {
+public:
+    set <int> vex;
+    //对点离散化
+    map <int,int> Id;
+    vector <int> par;
+    vector <set <int> > chi;
+    int n, rt;
+    void clear();
+    
     void random_tree(int n_, int M);
     
     bool check_tree();
+
+    void add_root(int u);
+
+    void add_vex(int u);
+
+    void add_edge(int u, int v);
+
+    int GET_UD_T(int u,int v);
 };
