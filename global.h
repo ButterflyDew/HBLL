@@ -10,6 +10,7 @@
 #include <map>
 #include <chrono>
 #include <set>
+#include <sstream>
 using namespace std;
 
 extern const int inf;
@@ -53,11 +54,15 @@ public:
     set <int> vex;
     //对点离散化
     map <int,int> Id;
+    //par and chi 全身存储离散化后的
     vector <int> par;
     vector <set <int> > chi;
+    // n 从 0 开始，rt 是离散化前的根
     int n, rt;
     void clear();
     
+    void Print();
+
     void random_tree(int n_, int M);
     
     bool check_tree();

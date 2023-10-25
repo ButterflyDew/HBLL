@@ -119,7 +119,7 @@ void Graph::read()
     inputFile.close();
 }
 
-void Tree::random_tree (int n_, int M)
+void Tree::random_tree(int n_, int M)
 {
     clear();
     n = n_;
@@ -205,4 +205,14 @@ int Tree::GET_UD_T(int u,int v)
         tv = par[Id[tv]];
     }
     return h[tv] + ct;
+}
+
+void Tree::Print()
+{
+    map <int, int> fid;
+    for(auto [u, nu]: Id)
+        fid[nu] = u;
+    for(int i = 0; i <= n; i++) 
+        for(auto v: chi[i])
+            fprintf(stderr, "[%d %d]\n", fid[i], fid[v]);
 }
