@@ -1,4 +1,5 @@
 #include "global.h"
+#include <cstdio>
 
 const int inf = 0x3f3f3f3f;
 
@@ -91,7 +92,7 @@ void Graph::random_graph_nm(int n_,int m_,int M)
 void Graph::read()
 {
     clear();
-    string filename = "Data/debug.in";
+    string filename = "Data/graph.in";
 
     ifstream inputFile(filename);
 
@@ -170,7 +171,12 @@ void Tree::clear()
 void Tree::add_vex(int u)
 {
     if(Id.find(u) == Id.end()) 
+    {
         Id[u] = n++;
+        chi.push_back(set <int> ());
+        par.push_back(-1);
+        vex.insert(u);
+    }    
 }
 
 void Tree::add_root(int u)
@@ -182,27 +188,28 @@ void Tree::add_root(int u)
 void Tree::add_edge(int u, int v)
 {
     add_vex(u), add_vex(v);
-    chi[Id[u]].insert(v);
-    par[Id[v]] = u;
+    //fprintf(stderr, "addedge: %d %d\n", Id[u], Id[v]);
+    chi[Id[u]].insert(Id[v]);
+    par[Id[v]] = Id[u];
 }
 
 int Tree::GET_UD_T(int u,int v)
 {
     map <int, int> h;
-    int tu = u, ct = 0;
-    while(tu != rt)
+    int tu = Id[u], ct = 0;
+    while(tu != Id[rt])
     {
         h[tu] = ct++;
-        tu = par[Id[tu]];
+        tu = par[tu];
     }
     h[tu] = ct++;
 
-    int tv = v; 
+    int tv = Id[v]; 
     ct = 0;
     while(h.find(tv) == h.end())
     {
         ct++;
-        tv = par[Id[tv]];
+        tv = par[tv];
     }
     return h[tv] + ct;
 }
@@ -210,9 +217,15 @@ int Tree::GET_UD_T(int u,int v)
 void Tree::Print()
 {
     map <int, int> fid;
+    fprintf(stderr, "The point are: ");
+    for(auto x: vex)
+        fprintf(stderr, "%d ", x);
+    fprintf(stderr, "\nThe edges are:\n");
+
     for(auto [u, nu]: Id)
         fid[nu] = u;
-    for(int i = 0; i <= n; i++) 
+    for(int i = 0; i < chi.size(); i++) 
         for(auto v: chi[i])
             fprintf(stderr, "[%d %d]\n", fid[i], fid[v]);
+    fprintf(stderr, "\n");
 }

@@ -30,6 +30,8 @@ public:
     vector <vector < pair <int, int> > > ed;
     map <pair <int, int>, int > gval;
 
+    Graph(){clear();}
+
     void Print()
     {
         cerr << "n: " << n << endl;
@@ -59,6 +61,8 @@ public:
     vector <set <int> > chi;
     // n 从 0 开始，rt 是离散化前的根
     int n, rt;
+    Tree(){clear();}
+
     void clear();
     
     void Print();
@@ -66,11 +70,11 @@ public:
     void random_tree(int n_, int M);
     
     bool check_tree();
-
+    
     void add_root(int u);
 
     void add_vex(int u);
-
+    //有向边
     void add_edge(int u, int v);
 
     int GET_UD_T(int u,int v);
