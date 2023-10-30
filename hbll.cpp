@@ -25,9 +25,16 @@ void HBLL::build_hbll(Graph G)
     sort(v.begin(), v.end(), [&betc](int v1, int v2) {
         return betc.BC[v1] > betc.BC[v2];
     });
-
+    int per = 0;
     for(int i = 1; i <= n; i++)
     {
+        //if(per * 0.1 >= i/n)
+        if((per+1) * n <= i * 10)
+        {
+            ++per;
+            cerr << per*10.0 << "\% has done!" << endl; 
+        }
+
         //以 v[i] 为根， d[h][i] 带权距离 V[h] 在此层的点
         vector <int> id(n+1), d[2], V[2];
         for(int j = 1; j <= n; j++) 
@@ -217,4 +224,18 @@ void HBLL::output_L()
             printf("[%d, %d, %d]\n", it.l, it.h, it.d);
         puts("");
     }
+}
+
+void HBLL::output_F(string filepre)
+{
+    ofstream outputFile(filepre+"/hbll.txt");
+
+    for(int i = 1; i <= n; i++)
+    {
+        for(int j = 0; j < L[i].size(); j++)
+            outputFile << L[i][j].l << " " << L[i][j].h << " " << L[i][j].d << " " << prew[i][j] << ",";
+        outputFile << endl;
+    }
+
+    outputFile.close();
 }

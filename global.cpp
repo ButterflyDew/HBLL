@@ -89,10 +89,32 @@ void Graph::random_graph_nm(int n_,int m_,int M)
     build_ed();
 }
 
-void Graph::read()
+vector<int> extractIntegers(const string& input) 
+{
+    vector<int> integers;
+    istringstream iss(input);
+    string token;
+
+    while (iss >> token) 
+    {
+        try 
+        {
+            int number = stoi(token);
+            integers.push_back(number);
+        } catch (const invalid_argument&) 
+        {
+            cerr << "not a number" << endl;
+        }
+    }
+
+    return integers;
+}
+
+
+void Graph::read(string filename = "Data/graph.in", int typ = 1)
 {
     clear();
-    string filename = "Data/graph.in";
+    //string filename = "Data/graph.in";
 
     ifstream inputFile(filename);
 
@@ -102,14 +124,15 @@ void Graph::read()
     string line;
     getline(inputFile, line);
 
-    n = get_one_num(line);
+    n = extractIntegers(line)[0];
+    //get_one_num(line);
 
     while (getline(inputFile, line)) 
     {
         //cout << line << endl;
-        auto num = get_num(line);
+        auto num = extractIntegers(line);
         if(num.size() == 2 || num.size() == 3)
-            edge.push_back(make_pair(make_pair(num[0], num[1]), num.size()==2? 1: num[2]));
+            edge.push_back(make_pair(make_pair(num[0] + typ, num[1] + typ), num.size()==2? 1: num[2]));
         else
         {
             cerr << "Input invalid!" << endl;

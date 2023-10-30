@@ -16,6 +16,7 @@ using namespace std;
 extern const int inf;
 
 int generateRandomNumber(int l, int r); 
+vector<int> extractIntegers(const string& input);
 
 class Graph
 {
@@ -46,7 +47,7 @@ public:
 
     void random_graph_nm(int n_, int m_, int M);
 
-    void read();
+    void read(string filename, int typ);
 };
 
 

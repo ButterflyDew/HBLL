@@ -19,5 +19,6 @@ public:
     int GET_UD(int u, int v);
     vector <int> GET_MWP(int u, int v, int h);
     void output_L();
+    void output_F(string filepre);
     void clear();
 };
