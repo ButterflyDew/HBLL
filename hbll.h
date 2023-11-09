@@ -20,5 +20,6 @@ public:
     vector <int> GET_MWP(int u, int v, int h);
     void output_L();
     void output_F(string filepre);
+    double Average_L();
     void clear();
 };

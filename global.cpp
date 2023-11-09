@@ -1,5 +1,6 @@
 #include "global.h"
 #include <cstdio>
+#include <string>
 
 const int inf = 0x3f3f3f3f;
 
@@ -251,4 +252,48 @@ void Tree::Print()
         for(auto v: chi[i])
             fprintf(stderr, "[%d %d]\n", fid[i], fid[v]);
     fprintf(stderr, "\n");
+}
+
+void Tree::Print_to_file(string prefile, int qid, int D)
+{
+    string folderName = prefile + '/' +to_string(qid);
+
+    struct stat info;
+    if (stat(folderName.c_str(), &info) != 0) 
+    {
+        // 子文件夹不存在，创建它
+        int status = mkdir(folderName.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+        if (status != 0) 
+        {
+            std::cerr << "无法创建子文件夹" << std::endl;
+            return;
+        }
+    }
+
+    ofstream outputFile(folderName + "/diameter_" + to_string(D) + "_result.txt");
+
+    outputFile << "D is "  << D << endl;
+    outputFile << "The point are: ";
+    
+    for(auto x: vex)
+        outputFile << x << " ";
+    outputFile << endl;
+
+    outputFile << "The edges are: ";
+    
+    map <int, int> fid;
+    for(auto [u, nu]: Id)
+        fid[nu] = u;
+    for(int i = 0; i < chi.size(); i++) 
+        for(auto v: chi[i])
+            outputFile << "[" << fid[i] << " " << fid[v] << "]" << endl;
+
+    outputFile.close();
+}
+
+double get_now_time()
+{
+    chrono::system_clock::time_point now = chrono::system_clock::now();
+    chrono::milliseconds ms = chrono::duration_cast<chrono::milliseconds>(now.time_since_epoch());
+    return ms.count();
 }

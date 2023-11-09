@@ -11,12 +11,15 @@
 #include <chrono>
 #include <set>
 #include <sstream>
+#include <sys/stat.h> 
+#include <filesystem>
 using namespace std;
 
 extern const int inf;
 
 int generateRandomNumber(int l, int r); 
 vector<int> extractIntegers(const string& input);
+double get_now_time();
 
 class Graph
 {
@@ -67,6 +70,8 @@ public:
     void clear();
     
     void Print();
+
+    void Print_to_file(string prefile, int qid, int D);
 
     void random_tree(int n_, int M);
     
