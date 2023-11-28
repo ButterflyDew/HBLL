@@ -86,7 +86,7 @@ pair <int,pair <int, pair <int,int> > > HBLL::GET_WD_build(int u, int v, int h, 
     int nu = L[u].size(), nv = L[v].size(); 
     if(!id.empty()) 
         nu = id[u], nv = id[v];
-
+    pcntwd += nu + nv;
     // pot[typ][vid[typ][vv]] -> vector <pair <int,int> > which root is vv
     map <int,int> vid[2];
     vector <vector <pair <int,int> > > pot[2];
@@ -157,6 +157,8 @@ pair <int,pair <int, pair <int,int> > > HBLL::GET_WD_build(int u, int v, int h, 
 
 int HBLL::GET_UD(int u, int v)
 {
+    ++cntud;
+    pcntud += L[u].size() + L[v].size();
     map <int, int > hm;
     for(auto it: L[u])
         hm[it.l] = it.h;
@@ -169,6 +171,7 @@ int HBLL::GET_UD(int u, int v)
 
 int HBLL::GET_WD(int u, int v, int h)
 {
+    ++cntwd;
     return GET_WD_build(u, v, h).first;
 }
 
@@ -246,4 +249,15 @@ double HBLL::Average_L()
     int sum = 0;
     for(int i = 1; i <= n; i++) sum+=L[i].size();
     return 1.0*sum/(1.0*n);
+}
+
+void HBLL::clearcnt()
+{
+    cntwd = cntud = 0;
+    pcntwd = pcntud = 0;
+}
+
+void HBLL::printcnt()
+{
+    fprintf(stderr, "ud:[%d %lld], wd:[%d %lld]\n",cntud, pcntud, cntwd, pcntwd);
 }
