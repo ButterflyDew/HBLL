@@ -14,6 +14,8 @@ public:
     long long pcntwd, pcntud;
     void clearcnt();
     void printcnt();
+    void clearbuc();
+    void rearrange();
     int n;
     vector < vector <Triple> > L;
     vector < vector <int> > prew;
@@ -27,3 +29,4 @@ public:
     double Average_L();
     void clear();
 };
+

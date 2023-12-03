@@ -1,12 +1,18 @@
 #include "hbll.h"
 #include <cstdio>
 #include <utility>
-
+#include <vector>
+static int vid[2][1000010], hm[1000010];
 void HBLL::clear()
 {
     n = 0;
     L.clear();
     prew.clear();
+}
+void HBLL::clearbuc()
+{
+    memset(vid, -1, sizeof vid);
+    memset(hm, -1, sizeof hm);
 }
 void HBLL::build_hbll(Graph G)
 {
@@ -83,24 +89,27 @@ void HBLL::build_hbll(Graph G)
 // [dis, midx, h1, h2]
 pair <int,pair <int, pair <int,int> > > HBLL::GET_WD_build(int u, int v, int h, vector <int> id = vector <int>())
 {
+    //fprintf(stderr, "GET_WD %d %d %d\n", u, v, h);
     int nu = L[u].size(), nv = L[v].size(); 
     if(!id.empty()) 
         nu = id[u], nv = id[v];
     pcntwd += nu + nv;
     // pot[typ][vid[typ][vv]] -> vector <pair <int,int> > which root is vv
-    map <int,int> vid[2];
+    //map <int,int> vid[2];
     vector <vector <pair <int,int> > > pot[2];
     for(int i = 0; i <= 1; i++)
         pot[i].push_back(vector <pair <int,int> >());
 
+    vector <int> perv[2];
     for(int i = 0; i < nu; i++)
     {
         auto it = L[u][i];
         if(it.h > h) continue;
-        if(vid[0][it.l] == 0)
+        if(vid[0][it.l] == -1)
         {
             pot[0].push_back(vector <pair <int,int> >());
             vid[0][it.l] = pot[0].size() - 1;
+            perv[0].push_back(it.l);
         }    
             
         pot[0][vid[0][it.l]].push_back(make_pair(it.h, it.d));
@@ -110,24 +119,29 @@ pair <int,pair <int, pair <int,int> > > HBLL::GET_WD_build(int u, int v, int h, 
     {
         auto it = L[v][i];
         if(it.h > h) continue;
-        if(vid[1][it.l] == 0)
+        if(vid[1][it.l] == -1)
         {
             pot[1].push_back(vector <pair <int,int> >());
             vid[1][it.l] = pot[1].size() - 1;
+            perv[1].push_back(it.l);
         }    
             
         pot[1][vid[1][it.l]].push_back(make_pair(it.h, it.d));
     }
+
     int ans = inf, idl = 0, h1 = 0, h2 = 0;
-    for(auto [l, pu]: vid[0])
+    for(auto l: perv[0])
+    //for(auto [l, pu]: vid[0])
     {
-        if(vid[1].find(l) == vid[1].end()) continue;
+        int pu = vid[0][l];
+        if(vid[1][l] == -1) continue;
+        //if(vid[1].find(l) == vid[1].end()) continue;
         int pv = vid[1][l]; 
-        auto hdu = pot[0][pu];
-        auto hdv = pot[1][pv];
+        auto &hdu = pot[0][pu];
+        auto &hdv = pot[1][pv];
         if(hdu.empty() || hdv.empty()) continue;
-        sort(hdu.begin(), hdu.end());
-        sort(hdv.begin(), hdv.end());
+        // sort(hdu.begin(), hdu.end());
+        // sort(hdv.begin(), hdv.end());
         vector <int> miv, mivid;
         for(auto [hv, d]: hdv)
         {
@@ -152,20 +166,33 @@ pair <int,pair <int, pair <int,int> > > HBLL::GET_WD_build(int u, int v, int h, 
             }
         }
     }
+
+    for(int j = 0; j < 2; j++)
+        for(auto x: perv[j]) vid[j][x] = -1;
+
+    //fprintf(stderr, "ret: %d %d %d %d\n",ans, idl, h1, h2);
+
     return make_pair(ans, make_pair(idl, make_pair(h1, h2)));
 }
 
 int HBLL::GET_UD(int u, int v)
 {
+    //fprintf(stderr, "GET_UD\n");
     ++cntud;
     pcntud += L[u].size() + L[v].size();
-    map <int, int > hm;
+    //map <int, int > hm;
+    vector <int> perv;
     for(auto it: L[u])
+    {
         hm[it.l] = it.h;
+        perv.push_back(it.l);
+    }    
     int ans = inf;
     for(auto it: L[v])
-        if(hm.find(it.l) != hm.end())
+        if(hm[it.l] != -1) //if(hm.find(it.l) != hm.end())
             ans = min(ans, hm[it.l] + it.h);
+    for(auto x: perv) hm[x] = -1;
+    //fprintf(stderr, "%d %d %d\n", u, v, ans);
     return ans;
 }
 
@@ -260,4 +287,29 @@ void HBLL::clearcnt()
 void HBLL::printcnt()
 {
     fprintf(stderr, "ud:[%d %lld], wd:[%d %lld]\n",cntud, pcntud, cntwd, pcntwd);
+}
+
+void HBLL::rearrange()
+{
+    for(int i = 1; i <= n; i++)
+    {
+        int len = L[i].size();
+        //fprintf(stderr, "%d %d\n",i, len);
+        vector <int> Id;
+        for(int j = 0; j <= len - 1; j++) Id.push_back(j);
+        sort(Id.begin(), Id.end(), [&](int x,int y){
+            if(L[i][x].l==L[i][y].l)
+                return L[i][x].h == L[i][y].h? L[i][x].d < L[i][y].d : L[i][x].h < L[i][y].h;
+            return L[i][x].l < L[i][y].l;
+        });
+        vector <Triple> tmpl = L[i];
+        vector <int> tmpp = prew[i];
+        for(int j = 0; j <= len - 1; j++) 
+        {
+            tmpl[j] = L[i][Id[j]];
+            tmpp[j] = prew[i][Id[j]];
+        }    
+        L[i] = tmpl;
+        prew[i] = tmpp;
+    }
 }
