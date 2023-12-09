@@ -4,12 +4,6 @@
 class HBLL
 {
 public:
-    struct Triple
-    {
-        int l, h, d;
-        Triple(){l = h = d = 0;}
-        Triple(int L, int H, int D): l(L), h(H), d(D) {}
-    };
     int cntwd, cntud;
     long long pcntwd, pcntud;
     void clearcnt();

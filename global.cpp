@@ -1,6 +1,7 @@
 #include "global.h"
 #include <cstdio>
 #include <string>
+#include <utility>
 
 const int inf = 0x3f3f3f3f;
 
@@ -238,6 +239,19 @@ int Tree::GET_UD_T(int u,int v)
     return h[tv] + ct;
 }
 
+double Tree::get_sumvalue()
+{
+    double ret = 0;
+    map <int, int> fid;
+    for(auto [u, nu]: Id)
+        fid[nu] = u;
+    for(int i = 0; i < chi.size(); i++) 
+        for(auto v: chi[i])
+            ret += gval[make_pair(fid[i], fid[v])];
+            //fprintf(stderr, "[%d %d]\n", fid[i], fid[v]);
+    return ret;
+}
+
 void Tree::Print()
 {
     map <int, int> fid;
@@ -254,7 +268,7 @@ void Tree::Print()
     fprintf(stderr, "\n");
 }
 
-void Tree::Print_to_file(string prefile, int qid, int D)
+void Tree::Print_to_file(string prefile, int qid, int D, vector <int> M)
 {
     string folderName = prefile + '/' +to_string(qid);
 
@@ -287,6 +301,12 @@ void Tree::Print_to_file(string prefile, int qid, int D)
     for(int i = 0; i < chi.size(); i++) 
         for(auto v: chi[i])
             outputFile << "[" << fid[i] << " " << fid[v] << "]" << endl;
+
+    outputFile << "Query size is: " << M.size() << endl;
+    for(auto x: M) outputFile << x << " ";
+    outputFile << endl;
+
+    outputFile << "The sum weight of Tree is: " << get_sumvalue() << endl;
 
     outputFile.close();
 }

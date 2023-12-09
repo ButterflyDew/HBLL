@@ -21,6 +21,13 @@ int generateRandomNumber(int l, int r);
 vector<int> extractIntegers(const string& input);
 double get_now_time();
 
+struct Triple
+{
+    int l, h, d;
+    Triple(){l = h = d = 0;}
+    Triple(int L, int H, int D): l(L), h(H), d(D) {}
+};
+
 class Graph
 {
 private:
@@ -71,17 +78,19 @@ public:
     
     void Print();
 
-    void Print_to_file(string prefile, int qid, int D);
+    void Print_to_file(string prefile, int qid, int D, vector <int> M);
 
     void random_tree(int n_, int M);
     
     bool check_tree();
     
-    void add_root(int u);
+    void add_root(int u); 
 
     void add_vex(int u);
     //有向边
     void add_edge(int u, int v);
 
     int GET_UD_T(int u,int v);
+
+    double get_sumvalue();
 };
