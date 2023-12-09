@@ -16,30 +16,36 @@
 using namespace std;
 
 extern const int inf;
-
+extern const double INF;
+extern const double eps;
 int generateRandomNumber(int l, int r); 
+double getRandomRealNumber(double l, double r);
 vector<int> extractIntegers(const string& input);
 double get_now_time();
 
 struct Triple
 {
-    int l, h, d;
+    int l, h;
+    double d;
     Triple(){l = h = d = 0;}
-    Triple(int L, int H, int D): l(L), h(H), d(D) {}
+    Triple(int L, int H, double D): l(L), h(H), d(D) {}
 };
 
 class Graph
 {
 private:
+    double get_one_double(string line);
     int get_one_num(string line);
+
+    pair < pair <int, int> , double > get_edge(string line);
 
     vector <int> get_num(string line);
 public:
     int n;
     // 先读 edge，然后以 edge 给下面两个
-    vector <pair <pair<int, int>, int> > edge;
-    vector <vector < pair <int, int> > > ed;
-    map <pair <int, int>, int > gval;
+    vector <pair <pair<int, int>, double> > edge;
+    vector <vector < pair <int, double> > > ed;
+    map <pair <int, int>, double > gval;
 
     Graph(){clear();}
 
@@ -56,6 +62,8 @@ public:
     void clear();
 
     void random_graph_nm(int n_, int m_, int M);
+
+    void random_graph_real(int n_, int m_, double M);
 
     void read(string filename, int typ);
 };

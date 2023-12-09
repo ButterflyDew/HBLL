@@ -4,14 +4,34 @@
 #include <utility>
 
 const int inf = 0x3f3f3f3f;
-
+const double INF = 1e18;
+const double eps = 1e-10;
 int generateRandomNumber(int l, int r)
 {
     random_device rd;
     mt19937 gen(rd());
     uniform_int_distribution<int> dis(l, r);
-
     return dis(gen);
+}
+
+double getRandomRealNumber(double l, double r) 
+{
+    random_device rd; 
+    mt19937 gen(rd()); 
+    uniform_real_distribution<double> dis(l, r); 
+    return dis(gen);
+}
+
+
+double Graph::get_one_double(string line)
+{
+    try {
+        double num = std::stod(line);
+        return num;
+    } catch (const invalid_argument& e) {
+        cerr << "error in get_one_num" << endl;
+    }
+    return -1;
 }
 
 int Graph::get_one_num(string line)
@@ -44,10 +64,33 @@ vector <int> Graph::get_num(string line)
     return ret;
 }
 
+pair < pair <int, int> , double > Graph::get_edge(string line)
+{
+    vector <int> ret;
+    pair <int, int> r;
+    double w = INF;
+    try{
+        int pos;
+        while((pos = line.find(" "))!=string::npos)
+        {
+            int u = get_one_num(line.substr(0,pos));
+            ret.push_back(u);
+            line = line.substr(pos+1);
+            //cout << line << endl;
+        }
+        if(ret.size() == 2) w = get_one_double(line);
+        else ret.push_back(get_one_num(line));
+    } catch (const invalid_argument& e) {
+        cerr << "error in get_two_num" << endl;
+    }
+    r = {ret[0], ret[1]};
+    return make_pair(r, w);
+}
+
 void Graph::build_ed()
 {
     for(int i = 0; i <= n; i++)
-        ed.push_back(vector < pair <int,int> > ());
+        ed.push_back(vector < pair <int, double> > ());
     for(auto [e, w]: edge)
     {
         auto [u, v] = e;
@@ -91,6 +134,20 @@ void Graph::random_graph_nm(int n_,int m_,int M)
     build_ed();
 }
 
+void Graph::random_graph_real(int n_, int m_, double M)
+{
+    clear();
+    n = n_;
+    for(int i = 1; i <= m_; i++)
+    {
+        int u = generateRandomNumber(1, n);
+        int v = generateRandomNumber(1, n);
+        double w = getRandomRealNumber(0, M);
+        edge.push_back(make_pair(make_pair(u, v), w));
+    }
+    build_ed();
+}
+
 vector<int> extractIntegers(const string& input) 
 {
     vector<int> integers;
@@ -113,7 +170,7 @@ vector<int> extractIntegers(const string& input)
 }
 
 
-void Graph::read(string filename = "Data/graph.in", int typ = 1)
+void Graph::read(string filename = "Data/graph.in", int typ = 0)
 {
     clear();
     //string filename = "Data/graph.in";
@@ -132,14 +189,18 @@ void Graph::read(string filename = "Data/graph.in", int typ = 1)
     while (getline(inputFile, line)) 
     {
         //cout << line << endl;
-        auto num = extractIntegers(line);
-        if(num.size() == 2 || num.size() == 3)
-            edge.push_back(make_pair(make_pair(num[0] + typ, num[1] + typ), num.size()==2? 1: num[2]));
-        else
-        {
-            cerr << "Input invalid!" << endl;
-            exit(0);
-        }
+        auto [e, w] = get_edge(line);
+        if(abs(INF-w) < eps) edge.push_back(make_pair(e, 1));
+        else edge.push_back(make_pair(e, w));
+
+        // auto num = extractIntegers(line);
+        // if(num.size() == 2 || num.size() == 3)
+        //     edge.push_back(make_pair(make_pair(num[0] + typ, num[1] + typ), num.size()==2? 1: num[2]));
+        // else
+        // {
+        //     cerr << "Input invalid!" << endl;
+        //     exit(0);
+        // }
     }
     build_ed();
     inputFile.close();

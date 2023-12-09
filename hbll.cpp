@@ -17,6 +17,7 @@ void HBLL::clearbuc()
 void HBLL::build_hbll(Graph G)
 {
     clear();
+    clearbuc();
     n = G.n;
 
     vector <int> v;
@@ -31,18 +32,11 @@ void HBLL::build_hbll(Graph G)
     sort(v.begin(), v.end(), [&betc](int v1, int v2) {
         return betc.BC[v1] > betc.BC[v2];
     });
-    //int per = 0;
     for(int i = 1; i <= n; i++)
     {
-        //if(per * 0.1 >= i/n)
-        // if((per+1) * n <= i * 10)
-        // {
-        //     ++per;
-        //     cerr << per*10.0 << "\% has done!" << endl; 
-        // }
-
         //以 v[i] 为根， d[h][i] 带权距离 V[h] 在此层的点
-        vector <int> id(n+1), d[2], V[2];
+        vector <int> id(n+1), V[2];
+        vector <double> d[2];
         for(int j = 1; j <= n; j++) 
             id[j] = L[j].size();
         
@@ -50,7 +44,7 @@ void HBLL::build_hbll(Graph G)
         V[0].push_back(v[i]);
         for(int l = 0; l <= 1; l++)
             for(int j = 0; j <= n; j++)
-                d[l].push_back(inf);
+                d[l].push_back(INF);
          
         d[0][v[i]] = 0;
         vector <int> prelas(n+1);
@@ -87,7 +81,7 @@ void HBLL::build_hbll(Graph G)
     }
 }
 // [dis, midx, h1, h2]
-pair <int,pair <int, pair <int,int> > > HBLL::GET_WD_build(int u, int v, int h, vector <int> id = vector <int>())
+pair <double ,pair <int, pair <int,int> > > HBLL::GET_WD_build(int u, int v, int h, vector <int> id = vector <int>())
 {
     //fprintf(stderr, "GET_WD %d %d %d\n", u, v, h);
     int nu = L[u].size(), nv = L[v].size(); 
@@ -96,9 +90,9 @@ pair <int,pair <int, pair <int,int> > > HBLL::GET_WD_build(int u, int v, int h, 
     pcntwd += nu + nv;
     // pot[typ][vid[typ][vv]] -> vector <pair <int,int> > which root is vv
     //map <int,int> vid[2];
-    vector <vector <pair <int,int> > > pot[2];
+    vector <vector <pair <int,double> > > pot[2];
     for(int i = 0; i <= 1; i++)
-        pot[i].push_back(vector <pair <int,int> >());
+        pot[i].push_back(vector <pair <int,double> >());
 
     vector <int> perv[2];
     for(int i = 0; i < nu; i++)
@@ -107,7 +101,7 @@ pair <int,pair <int, pair <int,int> > > HBLL::GET_WD_build(int u, int v, int h, 
         if(it.h > h) continue;
         if(vid[0][it.l] == -1)
         {
-            pot[0].push_back(vector <pair <int,int> >());
+            pot[0].push_back(vector <pair <int, double> >());
             vid[0][it.l] = pot[0].size() - 1;
             perv[0].push_back(it.l);
         }    
@@ -121,7 +115,7 @@ pair <int,pair <int, pair <int,int> > > HBLL::GET_WD_build(int u, int v, int h, 
         if(it.h > h) continue;
         if(vid[1][it.l] == -1)
         {
-            pot[1].push_back(vector <pair <int,int> >());
+            pot[1].push_back(vector <pair <int, double> >());
             vid[1][it.l] = pot[1].size() - 1;
             perv[1].push_back(it.l);
         }    
@@ -129,7 +123,8 @@ pair <int,pair <int, pair <int,int> > > HBLL::GET_WD_build(int u, int v, int h, 
         pot[1][vid[1][it.l]].push_back(make_pair(it.h, it.d));
     }
 
-    int ans = inf, idl = 0, h1 = 0, h2 = 0;
+    double ans = INF;
+    int idl = 0, h1 = 0, h2 = 0;
     for(auto l: perv[0])
     //for(auto [l, pu]: vid[0])
     {
@@ -140,9 +135,13 @@ pair <int,pair <int, pair <int,int> > > HBLL::GET_WD_build(int u, int v, int h, 
         auto &hdu = pot[0][pu];
         auto &hdv = pot[1][pv];
         if(hdu.empty() || hdv.empty()) continue;
-        // sort(hdu.begin(), hdu.end());
-        // sort(hdv.begin(), hdv.end());
-        vector <int> miv, mivid;
+        if(!id.empty())
+        {
+            sort(hdu.begin(), hdu.end());
+            sort(hdv.begin(), hdv.end());
+        }
+        vector <double> miv;
+        vector <int> mivid;
         for(auto [hv, d]: hdv)
         {
             if(miv.empty()) miv.push_back(d), mivid.push_back(hv);
@@ -196,7 +195,7 @@ int HBLL::GET_UD(int u, int v)
     return ans;
 }
 
-int HBLL::GET_WD(int u, int v, int h)
+double HBLL::GET_WD(int u, int v, int h)
 {
     ++cntwd;
     return GET_WD_build(u, v, h).first;
@@ -252,7 +251,7 @@ void HBLL::output_L()
     {
         printf("in %d:\n", i);
         for(auto it: L[i])
-            printf("[%d, %d, %d]\n", it.l, it.h, it.d);
+            printf("[%d, %d, %.6lf]\n", it.l, it.h, it.d);
         puts("");
     }
 }

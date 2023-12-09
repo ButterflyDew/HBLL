@@ -4,7 +4,8 @@
 #include <cstdio>
 #include <utility>
 const int N=310;
-int n, dis[N][N];
+int n;
+double dis[N][N];
 Graph G;
 Static_HL sthl;
 HBLL hbll;
@@ -13,7 +14,7 @@ void floyd()
     n = G.n;
     for(int i = 0; i <= n+1; i++)
         for(int j = 0; j <= n+1; j++)
-            dis[i][j] = inf;
+            dis[i][j] = INF;
     for(int i = 1; i <= n; i++)
         dis[i][i] = 0;
     for(auto [e, w]: G.edge)
@@ -36,12 +37,12 @@ int check()
             //fprintf(stderr, "%d %d\n", i, j);
             if(dis[i][j] != sthl.getD(i, j))
             {
-                fprintf(stderr, "[%d %d] = %d, not %d\n",i, j, dis[i][j], sthl.getD(i, j));
+                fprintf(stderr, "[%d %d] = %.6lf, not %d\n",i, j, dis[i][j], sthl.getD(i, j));
                 flg = 0;
             }  
             if(dis[i][j] == inf) continue;
             vector <pair <int, int> > route = sthl.getSP(i, j);
-            int sum = 0;
+            double sum = 0;
             for(auto it: route)
             {
                 if(G.gval.find(it) == G.gval.end())
@@ -53,7 +54,7 @@ int check()
             }
             if(sum != dis[i][j])
             {
-                fprintf(stderr, "the route length (%d) is not equal to the dis (%d) of %d and %d!\n",sum, dis[i][j], i, j);
+                fprintf(stderr, "the route length (%.6lf) is not equal to the dis (%.6lf) of %d and %d!\n",sum, dis[i][j], i, j);
                 flg = 0;
             }
         }    
@@ -107,22 +108,22 @@ void check_label_size()
     exec = chrono::duration_cast<chrono::microseconds>(end_time - start_time);
     cout << "query time:" << exec.count()/1e6 << "s" << endl;
 }
-void check_B_C()
-{
-    //int n = 4, m = 5, M = 1;
-    //G.random_graph_nm(n, m, M);
-    G.read();
-    B_C betc;
-    betc.build(G);
-}
-int dp[101][101][101];
+// void check_B_C()
+// {
+//     //int n = 4, m = 5, M = 1;
+//     //G.random_graph_nm(n, m, M);
+//     G.read();
+//     B_C betc;
+//     betc.build(G);
+// }
+double dp[101][101][101];
 void go_hbll_bf()
 {
     n = G.n;
     for(int h = 0; h <= n; h++)
         for(int i = 0; i <= n+1; i++)
             for(int j = 0; j <= n+1; j++)
-                dp[h][i][j] = inf;
+                dp[h][i][j] = INF;
     for(int r = 1; r <= n; r++) dp[0][r][r] = 0;
 
     for(int h = 0; h < n; h++)
@@ -141,31 +142,32 @@ void go_hbll_bf()
 }
 void check_hbll()
 {
-
-    int n = 60, m = 120, M = 10;
+    int n = 50, m = 80, M = 10;
     for(int T = 1; T <= 100; T++)
     {
-        G.random_graph_nm(n, m, M);
-        // G.read();
+        G.random_graph_real(n, m, M);
+        // G.read("Data/graph.in", 0);
         // int n = G.n;
+        //G.Print();
 
         go_hbll_bf();
         hbll.build_hbll(G);
-    
-        //fprintf(stderr, "hbll has been built!\n");
-        //hbll.output_L();
+        hbll.rearrange();
+        // fprintf(stderr, "hbll has been built!\n");
+        // hbll.output_L();
+
         for(int h = 1; h <= n-1; h++)
             for(int i = 1; i <= n; i++)
                 for(int j = 1; j <= n; j++)
                 {
                     //fprintf(stderr, "Testing [%d, (%d, %d)]\n", h, i, j);
-                    if(dp[h][i][j] != hbll.GET_WD(i, j, h))
+                    if(abs(dp[h][i][j] - hbll.GET_WD(i, j, h)) > eps)
                     {
-                        fprintf(stderr, "[%d %d %d] = %d, not = %d!\n", h, i, j, dp[h][i][j], hbll.GET_WD(i, j, h));
+                        fprintf(stderr, "[%d %d %d] = %.6lf, not = %.6lf!\n", h, i, j, dp[h][i][j], hbll.GET_WD(i, j, h));
                         G.Print();
                         return;
                     }
-                    if(dp[h][i][j] == inf) continue;
+                    if(abs(dp[h][i][j] - INF) < eps) continue;
                     //cout << "222" << endl;
                     auto route = hbll.GET_MWP(i, j, h);
                     //cout << "out of getmwp" << endl;
@@ -183,7 +185,8 @@ void check_hbll()
                         return;
                     }
                     //cout << "22222" << endl;
-                    int las = 0, sum = 0;
+                    int las = 0;
+                    double sum = 0;
                     for(auto u: route)
                     {
                         if(las != 0)
@@ -201,9 +204,9 @@ void check_hbll()
                         las = u;
                     }
                     //cout << "222222" << endl;
-                    if(sum != dp[h][i][j])
+                    if(abs(sum - dp[h][i][j]) > eps)
                     {
-                        fprintf(stderr, "the route length (%d) is not equal to the dis (%d) of [%d, %d, %d]!\n",sum, dis[i][j], h, i, j);
+                        fprintf(stderr, "the route length (%.6lf) is not equal to the dis (%.6lf) of [%d, %d, %d]!\n",sum, dis[i][j], h, i, j);
                         G.Print();
                         return;
                     }

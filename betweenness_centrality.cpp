@@ -2,13 +2,14 @@
 
 void B_C::sol(int rt, Graph &G)
 {
-    priority_queue <pair<int, int>, vector <pair<int, int> >, greater<pair<int, int> > > pq;
-    vector <int> d(n+1),vis(n+1),topo;
+    priority_queue <pair<double, int>, vector <pair<double, int> >, greater<pair<double, int> > > pq;
+    vector <double> d(n+1);
+    vector <int> vis(n+1),topo;
     vector <vector <int> > prev,sucv;
     vector <double> sv(n+1);
     for(int i = 0; i <= n; i++) 
     {
-        d[i] = inf;
+        d[i] = INF;
         prev.push_back(vector <int> ());
         sucv.push_back(vector <int> ());
     }

@@ -14,8 +14,8 @@ public:
     vector < vector <Triple> > L;
     vector < vector <int> > prew;
     void build_hbll(Graph G);
-    pair <int,pair <int, pair <int,int> > > GET_WD_build(int u, int v, int h, vector <int> id);
-    int GET_WD(int u, int v, int h);
+    pair <double ,pair <int, pair <int,int> > > GET_WD_build(int u, int v, int h, vector <int> id);
+    double GET_WD(int u, int v, int h);
     int GET_UD(int u, int v);
     vector <int> GET_MWP(int u, int v, int h);
     void output_L();
