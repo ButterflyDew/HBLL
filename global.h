@@ -20,6 +20,7 @@ extern const double INF;
 extern const double eps;
 int generateRandomNumber(int l, int r); 
 double getRandomRealNumber(double l, double r);
+tuple<int, int, double, int> extract_values(const string& lin);
 vector<int> extractIntegers(const string& input);
 double get_now_time();
 

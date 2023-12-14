@@ -22,25 +22,38 @@ double getRandomRealNumber(double l, double r)
     return dis(gen);
 }
 
+tuple<int, int, double, int> extract_values(const string& lin) 
+{
+    int a, b, d;
+    double c;
+    istringstream ss(lin);
+    ss >> a >> b >> c >> d;
+    return make_tuple(a, b, c, d);
+}
+
 
 double Graph::get_one_double(string line)
 {
+    cerr << "double: " << line << endl;
     try {
         double num = std::stod(line);
         return num;
     } catch (const invalid_argument& e) {
-        cerr << "error in get_one_num" << endl;
+        cerr << "error in get_one_double" << endl;
+        exit(0);
     }
     return -1;
 }
 
 int Graph::get_one_num(string line)
 {
+    cerr << "int: " << line << endl;
     try {
         int num = std::stoi(line);
         return num;
     } catch (const invalid_argument& e) {
         cerr << "error in get_one_num" << endl;
+        exit(0);
     }
     return -1;
 }
@@ -66,24 +79,27 @@ vector <int> Graph::get_num(string line)
 
 pair < pair <int, int> , double > Graph::get_edge(string line)
 {
-    vector <int> ret;
+    //vector <int> ret;
     pair <int, int> r;
     double w = INF;
     try{
-        int pos;
-        while((pos = line.find(" "))!=string::npos)
-        {
-            int u = get_one_num(line.substr(0,pos));
-            ret.push_back(u);
-            line = line.substr(pos+1);
-            //cout << line << endl;
-        }
-        if(ret.size() == 2) w = get_one_double(line);
-        else ret.push_back(get_one_num(line));
+        istringstream ss(line);
+        ss >> r.first >> r.second >> w;
+        //fprintf(stderr, "[%d %d]: %.10lf\n", r.first, r.second, w);
+        // int pos;
+        // while((pos = line.find(" "))!=string::npos)
+        // {
+        //     int u = get_one_num(line.substr(0,pos));
+        //     ret.push_back(u);
+        //     line = line.substr(pos+1);
+        //     //cout << line << endl;
+        // }
+        // if(ret.size() == 2) w = get_one_double(line);
+        // else ret.push_back(get_one_num(line));
     } catch (const invalid_argument& e) {
         cerr << "error in get_two_num" << endl;
     }
-    r = {ret[0], ret[1]};
+    //r = {ret[0], ret[1]};
     return make_pair(r, w);
 }
 

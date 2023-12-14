@@ -1,4 +1,5 @@
 #include "betweenness_centrality.h"
+#include <cstdio>
 
 void B_C::sol(int rt, Graph &G)
 {
@@ -67,7 +68,12 @@ void B_C::build(Graph G)
 {
     n = G.n;
     for(int i = 0; i <= n; i++) BC.push_back(0);
-    for(int i = 1; i <= n; i++) sol(i, G);
+    for(int i = 1; i <= n; i++) 
+    {
+        if(i % 100 == 0)
+            fprintf(stderr, "dij: %d node has done!\n", i);
+        sol(i, G);
+    }
     BC[0] = inf;
     // fprintf(stderr, "BC is :");
     // for(int i = 1; i <= n; i++)

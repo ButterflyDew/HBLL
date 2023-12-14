@@ -32,8 +32,14 @@ void HBLL::build_hbll(Graph G)
     sort(v.begin(), v.end(), [&betc](int v1, int v2) {
         return betc.BC[v1] > betc.BC[v2];
     });
+    
+    int modlen = 10, labelsize = 0;
+
     for(int i = 1; i <= n; i++)
     {
+        if(i >= 200) modlen = 100;
+        if(i % modlen == 0)
+            fprintf(stderr, "%d had done! The sum of label is %d\n", i, labelsize);
         //以 v[i] 为根， d[h][i] 带权距离 V[h] 在此层的点
         vector <int> id(n+1), V[2];
         vector <double> d[2];
@@ -66,6 +72,7 @@ void HBLL::build_hbll(Graph G)
                     continue;
                 L[u].push_back(Triple(v[i], h, d[cur][u]));
                 prew[u].push_back(prelas[u]);
+                ++labelsize;
                 for(auto [nxt, w]: G.ed[u])
                 {
                     if(d[cur][u] + w < d[cur^1][nxt])
